@@ -1,14 +1,14 @@
 'use client';
 
-import MonacoEditor from '@/components/MonacoEditor';
+import AceEditor from '@/components/AceEditor';
 import { useState, useCallback } from 'react';
 import { TypeScriptRunner } from '@/utils/typescript-runner';
 import { DEFAULT_TYPESCRIPT_CODE } from '@/utils/code-examples';
 
-export default function Monaco() {
+export default function AcePage() {
   const [output, setOutput] = useState<string[]>([]);
 
-  const handleCodeChange = (value: string | undefined) => {
+  const handleCodeChange = (value: string) => {
     // console.log('Code changed:', value);
   };
 
@@ -23,7 +23,7 @@ export default function Monaco() {
       <div className='flex gap-4'>
         <div className='flex-1'>
           <div className='h-[500px] border border-gray-300 rounded-lg'>
-            <MonacoEditor
+            <AceEditor
               defaultValue={DEFAULT_TYPESCRIPT_CODE}
               onChange={handleCodeChange}
               onRun={runCode}

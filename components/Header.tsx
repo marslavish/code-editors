@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 const navItems = [
   { name: 'Monaco', path: '/monaco' },
   { name: 'CodeMirror', path: '/codemirror' },
+  { name: 'Ace', path: '/ace' },
 ];
 
 export default function Header() {

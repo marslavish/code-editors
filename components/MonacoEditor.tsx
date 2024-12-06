@@ -10,7 +10,7 @@ interface CodeEditorProps {
   onRun?: (code: string) => void;
 }
 
-export default function CodeEditor({
+export default function MonacoEditor({
   defaultValue = '// Start coding here...',
   language = 'typescript',
   onChange,
