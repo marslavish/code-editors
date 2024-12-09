@@ -22,6 +22,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "codemirror": "^6.0.1",
+    "esbuild-wasm": "^0.24.0",
     "lucide-react": "^0.465.0",
     "next": "14.2.16",
     "react": "^18",
