@@ -1,40 +1,29 @@
-export const DEFAULT_TYPESCRIPT_CODE = `// Try some TypeScript code!
-
-interface User {
-  name: string;
-  age: number;
+export const DEFAULT_TYPESCRIPT_CODE = `export interface State {
+  get(key: string): string;
+  set(key: string, value: any): void;
 }
 
-const user: User = {
-  name: "John",
-  age: 30
-};
+export function reset(state: State) {
+  const newValue = 0;
+  state.set('value', newValue);
+  return newValue
+}
 
-console.log(user);
+export function inc(state: State, { x }: { x: number }) {
+  const oldValue = Number(state.get('value')) || 0;
+  const newValue = oldValue + x;
+  state.set('value', newValue);
+  return newValue
+}
 
-// Type checking works:
-// This would cause a compile error:
-// const wrongUser: User = { name: 42, age: "30" };
+export function dec(state: State, { x }: { x: number }) {
+  const oldValue = Number(state.get('value')) || 0;
+  const newValue = oldValue - x;
+  state.set('value', newValue);
+  return newValue
+}
+
+export function read(state: State) {
+  return state.get('value');
+}
 `;
-
-// You can add more example codes here
-export const MORE_EXAMPLES = {
-  classes: `class Animal {
-  constructor(private name: string) {}
-  
-  speak() {
-    console.log(\`\${this.name} makes a sound.\`);
-  }
-}
-
-const dog = new Animal("Dog");
-dog.speak();`,
-
-  generics: `function identity<T>(arg: T): T {
-  return arg;
-}
-
-const num = identity(123);
-const str = identity("hello");
-console.log(num, str);`,
-};

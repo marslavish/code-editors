@@ -22,7 +22,7 @@ export default function AcePage() {
       <h1 className='text-2xl font-bold mb-4'>TypeScript Editor</h1>
       <div className='flex gap-4'>
         <div className='flex-1'>
-          <div className='h-[500px] border border-gray-300 rounded-lg'>
+          <div className='h-[600px] border border-gray-300 rounded-lg'>
             <AceEditor
               defaultValue={DEFAULT_TYPESCRIPT_CODE}
               onChange={handleCodeChange}
@@ -30,7 +30,7 @@ export default function AcePage() {
             />
           </div>
         </div>
-        <div className='flex-1 h-[500px] border border-gray-300 rounded-lg p-4 bg-gray-50 overflow-auto'>
+        <div className='flex-1 h-[600px] border border-gray-300 rounded-lg p-4 bg-gray-50 overflow-auto'>
           <h2 className='text-lg font-semibold mb-2'>Output:</h2>
           {output.map((line, index) => (
             <div key={index} className='font-mono whitespace-pre-wrap'>

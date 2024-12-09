@@ -1,5 +1,5 @@
 import * as esbuild from 'esbuild-wasm';
-import { initializeEsbuild } from './esbuild-init';
+import { initializeEsbuild, isInitialized } from './esbuild-init';
 
 export class TypeScriptRunner {
   private originalConsoleLog: typeof console.log;
@@ -10,31 +10,12 @@ export class TypeScriptRunner {
     this.setOutput = setOutput;
   }
 
-  private customStringify(obj: any): string {
-    if (obj === null) return 'null';
-    if (obj === undefined) return 'undefined';
-    if (typeof obj === 'string') return `'${obj}'`;
-    if (typeof obj !== 'object') return String(obj);
-
-    if (Array.isArray(obj)) {
-      const items = obj.map((item) => this.customStringify(item)).join(', ');
-      return `[${items}]`;
-    }
-
-    const entries = Object.entries(obj).map(([key, value]) => {
-      const formattedKey = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key) ? key : `'${key}'`;
-      return `${formattedKey}: ${this.customStringify(value)}`;
-    });
-
-    return `{ ${entries.join(', ')} }`;
-  }
-
   private setupConsoleLog() {
     console.log = (...args) => {
       this.setOutput((prev) => [
         ...prev,
         args
-          .map((arg) => (typeof arg === 'object' ? this.customStringify(arg) : String(arg)))
+          .map((arg) => (typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)))
           .join(' '),
       ]);
       this.originalConsoleLog(...args);
@@ -45,9 +26,13 @@ export class TypeScriptRunner {
     console.log = this.originalConsoleLog;
   }
 
-  public async run(code: string) {
-    await initializeEsbuild();
+  public static async initialize() {
+    if (!isInitialized) {
+      await initializeEsbuild();
+    }
+  }
 
+  public async run(code: string) {
     // Clear previous output
     this.setOutput([]);
 
@@ -55,11 +40,17 @@ export class TypeScriptRunner {
     this.setupConsoleLog();
 
     try {
-      // Compile TypeScript to JavaScript using esbuild
+      // Compile TypeScript to JavaScript using esbuild with enhanced options
       const result = await esbuild.transform(code, {
         loader: 'ts',
-        target: 'es2015',
+        target: 'es2022',
         format: 'iife',
+        sourcemap: true,
+        minify: false,
+        minifyIdentifiers: false,
+        minifySyntax: false,
+        minifyWhitespace: false,
+        platform: 'neutral',
       });
 
       // Execute the compiled JavaScript code
@@ -78,14 +69,18 @@ export class TypeScriptRunner {
 
   async compile(code: string): Promise<string> {
     try {
-      await initializeEsbuild();
-
       const result = await esbuild.transform(code, {
         loader: 'ts',
-        target: 'es2015',
+        target: 'es2022',
         format: 'esm',
+        sourcemap: true,
         minify: false,
+        minifyIdentifiers: false,
+        minifySyntax: false,
+        minifyWhitespace: false,
         treeShaking: false,
+        platform: 'neutral',
+        logLevel: 'info',
       });
 
       return result.code;

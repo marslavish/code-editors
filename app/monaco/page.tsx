@@ -1,19 +1,26 @@
 'use client';
 
-import MonacoEditor from '@/components/MonacoEditor';
-import Editor from '@monaco-editor/react';
-import { useState, useCallback } from 'react';
+import { MonacoEditor } from '@/components/MonacoEditor';
+import { useState, useCallback, useEffect } from 'react';
 import { TypeScriptRunner } from '@/utils/typescript-runner';
 import { DEFAULT_TYPESCRIPT_CODE } from '@/utils/code-examples';
 import { TabButton } from '@/components/TabButton';
+import { cn } from '@/lib/utils';
 
 export default function Monaco() {
+  const [code, setCode] = useState(DEFAULT_TYPESCRIPT_CODE);
   const [output, setOutput] = useState<string[]>([]);
   const [compiledJS, setCompiledJS] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'log' | 'compiled'>('log');
 
+  useEffect(() => {
+    TypeScriptRunner.initialize();
+  }, []);
+
   const handleCodeChange = (value: string | undefined) => {
-    // console.log('Code changed:', value);
+    if (value !== undefined) {
+      setCode(value);
+    }
   };
 
   const runCode = useCallback(async (code: string) => {
@@ -37,7 +44,7 @@ export default function Monaco() {
       <div className='flex gap-4'>
         <div className='flex-1'>
           <MonacoEditor
-            defaultValue={DEFAULT_TYPESCRIPT_CODE}
+            value={code}
             onChange={handleCodeChange}
             onRun={runCode}
             onCompile={compileCode}
@@ -58,44 +65,18 @@ export default function Monaco() {
               onClick={() => setActiveTab('log')}
             />
           </div>
-          <div className='h-[500px] border-2 border-gray-300 rounded-lg bg-white overflow-auto'>
-            {activeTab === 'log' ? (
-              <Editor
-                defaultLanguage='javascript'
-                value={formattedOutput}
-                options={{
-                  readOnly: true,
-                  domReadOnly: true,
-                  minimap: { enabled: false },
-                  fontSize: 14,
-                  scrollBeyondLastLine: false,
-                  wordWrap: 'on',
-                  automaticLayout: true,
-                  lineNumbers: 'off',
-                  hover: { enabled: false },
-                  quickSuggestions: false,
-                  parameterHints: { enabled: false },
-                  suggestOnTriggerCharacters: false,
-                  acceptSuggestionOnEnter: 'off',
-                  tabCompletion: 'off',
-                  wordBasedSuggestions: 'off',
-                }}
-              />
-            ) : (
-              <Editor
-                defaultLanguage='javascript'
-                value={compiledJS}
-                options={{
-                  readOnly: true,
-                  domReadOnly: true,
-                  minimap: { enabled: false },
-                  fontSize: 14,
-                  scrollBeyondLastLine: false,
-                  wordWrap: 'on',
-                  automaticLayout: true,
-                }}
-              />
+          <div
+            className={cn(
+              'h-[600px] rounded-lg overflow-hidden',
+              activeTab === 'log' && 'border-2 border-gray-300 bg-white'
             )}
+          >
+            <div className={activeTab === 'log' ? 'block' : 'hidden'}>
+              <pre className='p-4 font-mono text-sm whitespace-pre-wrap'>{formattedOutput}</pre>
+            </div>
+            <div className={activeTab === 'compiled' ? 'block' : 'hidden'}>
+              <MonacoEditor value={compiledJS} language='javascript' readOnly={true} />
+            </div>
           </div>
         </div>
       </div>
